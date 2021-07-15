@@ -1,6 +1,7 @@
 window.onload = () => {
     let places = staticLoadPlaces();
     renderPlaces(places);
+    getLocation();
 };
 
 function staticLoadPlaces() {
@@ -14,6 +15,7 @@ function staticLoadPlaces() {
        },
    ];
 }
+
 
 function renderPlaces(places) {
    let scene = document.querySelector('a-scene');
@@ -35,4 +37,19 @@ function renderPlaces(places) {
 
        scene.appendChild(model);
    });
+}
+
+var x = document.getElementById("demo");
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  x.innerHTML = "Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude;
 }

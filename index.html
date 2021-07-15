@@ -13,34 +13,18 @@
     </script>
 </head>
 
-
-<body style='margin: 0; overflow: hidden;' onload="getLocation()">
-    <script src="./script.js">
-    </script><button onclick="getLocation()">Show Coordinates</button>
-    <script>
-        var x = document.getElementById("demo");
-        
-        function getLocation() {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
-          } else { 
-            x.innerHTML = "Geolocation is not supported by this browser.";
-          }
-        }
-        
-        function showPosition(position) {
-          x.innerHTML = "Latitude: " + position.coords.latitude + 
-          "<br>Longitude: " + position.coords.longitude;
-        }
-        </script> 
+<script src="./script.js">
+</script>
+<body style='margin: 0; overflow: hidden;'>
+    
 
     <a-scene
        vr-mode-ui="enabled: false"
 		embedded
         arjs='sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;'>
+        <p id="demo"></p>
         <a-camera gps-camera rotation-reader>
 		</a-camera>
 	</a-scene>
-</script>
 </body>
 <!-longitude: 19.1916174025549; latitude: 73.18239903907556->
