@@ -37,8 +37,22 @@
                     scale="0.004902109921639508 0.004902109921639508 0.004902109921639508"
                     gps-entity-place="latitude: 19.190358931915732; longitude: 73.18035375326873;"
                 ></a-entity>
-                
-            <a-camera gps-camera rotation-reader></a-camera>
+                <a-entity
+                    look-at="[gps-camera]"
+                    animation-mixer="loop: repeat"
+                    gltf-model="#animated-asset"
+                    scale="0.004902109921639508 0.004902109921639508 0.004902109921639508"
+                    gps-entity-place="latitude: 19.190161345067132; longitude: 73.1800050660968;"
+                ></a-entity>
+                <a-entity
+                    look-at="[gps-camera]"
+                    animation-mixer="loop: repeat"
+                    gltf-model="#animated-asset"
+                    scale="0.004902109921639508 0.004902109921639508 0.004902109921639508"
+                    gps-entity-place="latitude: 19.190561584847437; longitude: 73.17957591265441;"
+                ></a-entity>
+
+            <a-camera  gps-camera="simulateLatitude:73.18239903907556;simulateLongitude:19.1916174025549;"></a-camera>
         </a-scene>
     </body>
 </html>
