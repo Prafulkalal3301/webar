@@ -1,65 +1,105 @@
-const loadPlaces = function(coords) {
-  // fetch data from user coords using external APIs, or simply add places data statically
-  // please look at GeoAR.js repository on examples/click-places/places.js for full code
-}
 
-window.onload = () => {
-    const scene = document.querySelector('a-scene');
+var renderer,
+    scene,
+    camera,
+    container;
 
-    // first get current user location
-    return navigator.geolocation.getCurrentPosition(function (position) {
+var arSource,
+    arContext,
+    arMarker = [];
 
-        // than use it to load from remote APIs some places nearby
-        loadPlaces(position.coords)
-            .then((places) => {
-                places.forEach((place) => {
-                    const latitude = place.location.lat;
-                    const longitude = place.location.lng;
+var 
+    mesh;
 
-                    // add place icon
-                    const icon = document.createElement('a-image');
-                    icon.setAttribute('gps-entity-place', `latitude: ${latitude}; longitude: ${longitude};`);
-                    icon.setAttribute('name', place.name);
-                    icon.setAttribute('src', '../assets/asset.glb');
+init();
 
-                    // for debug purposes, just show in a bigger scale, otherwise I have to personally go on places...
-                    icon.setAttribute('scale', '20, 20');
+function init(){
 
-                    icon.addEventListener('loaded', () => window.dispatchEvent(new CustomEvent('gps-entity-place-loaded')));
 
-                    const clickListener = function(ev) {
-                        ev.stopPropagation();
-                        ev.preventDefault();
-            
-                        const name = ev.target.getAttribute('name');
-            
-                        const el = ev.detail.intersection && ev.detail.intersection.object.el;
-            
-                        if (el && el === ev.target) {
-                            const label = document.createElement('span');
-                            const container = document.createElement('div');
-                            container.setAttribute('id', 'place-label');
-                            label.innerText = name;
-                            container.appendChild(label);
-                            document.body.appendChild(container);
-            
-                            setTimeout(() => {
-                                container.parentElement.removeChild(container);
-                            }, 1500);
-                        }
-                    };
-            
-                    icon.addEventListener('click', clickListener);
 
-                    scene.appendChild(icon);
-                });
-            })
-    },
-        (err) => console.error('Error in retrieving position', err),
-        {
-            enableHighAccuracy: true,
-            maximumAge: 0,
-            timeout: 27000,
-        }
-    );
-};
+    container = document.getElementById('container');
+
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    scene = new THREE.Scene();
+    camera = new THREE.Camera();
+
+    renderer.setClearColor(0x000000, 0);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    container.appendChild(renderer.domElement);
+    scene.add(camera);
+    scene.visible = false;
+
+
+    mesh = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshBasicMaterial({
+        color: 0xFF00FF,
+        transparent: true,
+        opacity: 0.5
+    }));
+    scene.add(mesh);
+
+
+
+
+
+    arSource = new THREEx.ArToolkitSource({
+        sourceType : 'webcam',
+    });
+
+    arContext = new THREEx.ArToolkitContext({
+        cameraParametersUrl: './assets/data/camera_para.dat',
+        detectionMode: 'mono',
+    });
+
+    arMarker[0] = new THREEx.ArMarkerControls(arContext, camera, {
+        type : 'pattern',
+        patternUrl : './assets/data/patt.hiro',
+        changeMatrixMode: 'cameraTransformMatrix'
+    });
+
+    arMarker[1] = new THREEx.ArMarkerControls(arContext, camera, {
+        type : 'pattern',
+        patternUrl : './assets/data/u4bi.patt',
+        changeMatrixMode: 'cameraTransformMatrix'
+    });
+
+
+
+
+
+    /* handle */
+    arSource.init(function(){
+        arSource.onResize();
+        arSource.copySizeTo(renderer.domElement);
+
+        if(arContext.arController !== null) arSource.copySizeTo(arContext.arController.canvas);
+
+    });
+
+    arContext.init(function onCompleted(){
+        
+        camera.projectionMatrix.copy(arContext.getProjectionMatrix());
+
+    });
+
+
+    render();   
+    
+}   
+
+
+
+
+function render(){
+    requestAnimationFrame(render);
+    renderer.render(scene,camera);                
+
+    if(arSource.ready === false) return;
+
+    arContext.update(arSource.domElement);
+    scene.visible = camera.visible;
+
+
+    mesh.rotateX(.1);
+
+} 
